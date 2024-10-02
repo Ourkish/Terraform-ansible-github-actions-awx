@@ -1,0 +1,39 @@
+---
+name: PREPROD
+'on':
+  push:
+    branches:
+      - main
+jobs:
+  deploy:
+    name: Deploy to pre-production
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Lint Ansible Playbook
+      # replace "master" with any valid ref
+        uses: ansible/ansible-lint-action@master
+        with:
+          targets: ""
+          # [optional]
+          # Arguments to override a package and its version to be set explicitly.
+          # Must follow the example syntax.
+            
+      - name: Set up Python 3.
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Install test dependencies.
+        run: pip3 install ansible-tower-cli
+      
+      - name: deploy
+        run: |
+          tower-cli config host ${{ secrets.ANSIBLE_URL }}
+          tower-cli config username ${{ secrets.ANSIBLE_USER }}
+          tower-cli config password ${{ secrets.ANSIBLE_PASSWORD }}
+          tower-cli config verify_ssl false
+          tower-cli job_template list --insecure
+          tower-cli job launch --job-template=10 --extra-vars="infra=preprod" --wait --monitor
