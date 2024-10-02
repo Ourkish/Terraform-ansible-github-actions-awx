@@ -9,10 +9,10 @@
   # Hosts: where our play will run and options it will run with
   hosts: "{{ infra | default('linux') }}"
   tasks:
-    - name: "Run nginx role from collection eazytrainingfr.webapp"
+    - name: "Run nginx role from collection"
       import_role:
         name: eazytrainingfr.webapp.nginx
-    - name: "Run webapp role from collection eazytrainingfr.webapp"
+    - name: "Run webapp role from collection"
       import_role:
         name: eazytrainingfr.webapp.webapp
       vars:
